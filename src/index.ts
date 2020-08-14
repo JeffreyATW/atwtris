@@ -22,18 +22,18 @@ const root = document.createElement("pre");
 document.body.append(root);
 
 const updateGame = () => {
-  if (board.activeTetronimo) {
+  if (board.activeTetromino) {
     if (
       currentKeyCode === KEY_CODES.LEFT ||
       currentKeyCode === KEY_CODES.RIGHT
     ) {
       blockImmediatelyMoved = true;
       if (gameStep % 20 === 0) {
-        board.moveActiveTetronimo(currentKeyCode === KEY_CODES.LEFT ? -1 : 1);
+        board.moveActiveTetromino(currentKeyCode === KEY_CODES.LEFT ? -1 : 1);
       }
     }
   } else {
-    board.setActiveTetronimo();
+    board.setActiveTetromino();
   }
 
   let innerText = "";

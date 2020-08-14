@@ -1,12 +1,12 @@
 import Cell from "./Cell";
-import Tetronimo from "./tetronimos/Tetronimo";
-import S from "./tetronimos/S";
+import Tetromino from "./tetrominos/Tetromino";
+import S from "./tetrominos/S";
 import Square from "./Square";
 
 export default class Board {
-  activeTetronimo?: {
+  activeTetromino?: {
     coords: [number, number];
-    tetronimo: Tetronimo;
+    tetromino: Tetromino;
   };
   private grid: [Cell][];
 
@@ -17,32 +17,34 @@ export default class Board {
   }
 
   getGrid() {
-    if (!this.activeTetronimo) {
+    if (!this.activeTetromino) {
       return this.grid;
     }
-    const gridWithActiveTetronimo = [...this.grid].map((row) => [...row]);
-    this.activeTetronimo.tetronimo.getRotatedGrid().forEach((row, i) => {
+    const gridWithActiveTetromino = [...this.grid].map((row) => [...row]);
+    this.activeTetromino.tetromino.getRotatedGrid().forEach((row, i) => {
       row.forEach((col, j) => {
         if (col) {
-          gridWithActiveTetronimo[this.activeTetronimo.coords[0] + i][
-            this.activeTetronimo.coords[1] + j
+          gridWithActiveTetromino[this.activeTetromino.coords[0] + i][
+            this.activeTetromino.coords[1] + j
           ] = new Cell(new Square());
         }
       });
     });
-    return gridWithActiveTetronimo;
+    return gridWithActiveTetromino;
   }
 
-  moveActiveTetronimo(direction) {
-    if (this.activeTetronimo) {
-      this.activeTetronimo.coords[1] += direction;
+  moveActiveTetromino(direction) {
+    if (this.activeTetromino) {
+      this.activeTetromino.coords[1] += direction;
     }
   }
 
-  setActiveTetronimo() {
-    this.activeTetronimo = {
-      coords: [0, 5],
-      tetronimo: new S(),
+  setActiveTetromino() {
+    const tetromino = new S();
+
+    this.activeTetromino = {
+      coords: [tetromino.startingRow, 5],
+      tetromino,
     };
   }
 }

@@ -1,7 +1,7 @@
 import * as rotateMatrix from "rotate-matrix";
-import Tetronimo from "./Tetronimo";
+import Tetromino from "./Tetromino";
 
-export default class Tetronimo2Rotations extends Tetronimo {
+export default class Tetromino2Rotations extends Tetromino {
   getRotatedGrid() {
     return rotateMatrix(this.grid, this.rotation % 2);
   }
