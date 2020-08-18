@@ -4,7 +4,7 @@ import KEY_CODES from "./constants/keyCodes";
 const board = new Board();
 
 let currentKeyCode = null;
-let blockImmediatelyMoved = false;
+let immediateMoveTime = 0;
 
 let gameStep = 0;
 
@@ -15,6 +15,7 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("keyup", (event) => {
   if (currentKeyCode === event.keyCode) {
     currentKeyCode = null;
+    immediateMoveTime = 0;
   }
 });
 
@@ -25,11 +26,21 @@ const updateGame = () => {
   if (board.activeTetromino) {
     if (
       currentKeyCode === KEY_CODES.LEFT ||
-      currentKeyCode === KEY_CODES.RIGHT
+      currentKeyCode === KEY_CODES.RIGHT ||
+      currentKeyCode === KEY_CODES.DOWN
     ) {
-      blockImmediatelyMoved = true;
-      if (gameStep % 20 === 0) {
-        board.moveActiveTetromino(currentKeyCode === KEY_CODES.LEFT ? -1 : 1);
+      if (immediateMoveTime === 0) {
+        immediateMoveTime = gameStep;
+      }
+      if ((gameStep - immediateMoveTime) % 6 === 0) {
+        if (
+          currentKeyCode === KEY_CODES.LEFT ||
+          currentKeyCode === KEY_CODES.RIGHT
+        ) {
+          board.moveActiveTetromino(currentKeyCode === KEY_CODES.LEFT ? -1 : 1);
+        } else if (currentKeyCode === KEY_CODES.DOWN) {
+          board.softDropActiveTetromino();
+        }
       }
     }
   } else {

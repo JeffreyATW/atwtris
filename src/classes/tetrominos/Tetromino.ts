@@ -7,9 +7,7 @@ export default class Tetromino {
     this.rotation = 0;
   }
 
-  canRotate(direction, x, y) {}
-
-  getRotatedGrid() {
+  getRotatedGrid(direction = 0) {
     return this.grid;
   }
 }
