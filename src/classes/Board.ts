@@ -6,8 +6,9 @@ import IdleSquare from "./IdleSquare";
 
 export default class Board {
   activeTetromino?: {
-    coords: [number, number];
     tetromino: Tetromino;
+    x: number;
+    y: number;
   };
   private grid: Cell[][];
 
@@ -25,12 +26,11 @@ export default class Board {
     this.activeTetromino.tetromino.getRotatedGrid().forEach((row, i) => {
       row.forEach((col, j) => {
         if (col) {
-          const gridRow =
-            gridWithActiveTetromino[this.activeTetromino.coords[0] + i];
+          const gridRow = gridWithActiveTetromino[this.activeTetromino.y + i];
           if (gridRow) {
-            const gridCol = gridRow[this.activeTetromino.coords[1] + j];
+            const gridCol = gridRow[this.activeTetromino.x + j];
             if (gridCol) {
-              gridRow[this.activeTetromino.coords[1] + j] = new Cell(
+              gridRow[this.activeTetromino.x + j] = new Cell(
                 deactivate ? new IdleSquare() : new Square()
               );
             }
@@ -48,7 +48,7 @@ export default class Board {
 
   moveActiveTetromino(direction) {
     if (this.activeTetromino && this.canMove(direction)) {
-      this.activeTetromino.coords[1] += direction;
+      this.activeTetromino.x += direction;
       return true;
     }
     return false;
@@ -57,7 +57,7 @@ export default class Board {
   softDropActiveTetromino() {
     if (this.activeTetromino) {
       if (this.canSoftDrop()) {
-        this.activeTetromino.coords[0] += 1;
+        this.activeTetromino.y += 1;
       } else {
         this.deactivateTetromino();
       }
@@ -68,37 +68,37 @@ export default class Board {
 
   rotateActiveTetromino(direction) {
     if (this.activeTetromino) {
-      const { coords, tetromino } = this.activeTetromino;
+      const { tetromino, x, y } = this.activeTetromino;
 
       const rotatedGrid = tetromino.getRotatedGrid(direction);
 
-      if (!this.doesTetrominoOverlap(rotatedGrid, coords[0], coords[1])) {
+      if (!this.doesTetrominoOverlap(rotatedGrid, x, y)) {
         this.activeTetromino.tetromino.rotation += direction;
         return true;
       }
       if (
         // try moving it up
-        !this.doesTetrominoOverlap(rotatedGrid, coords[0] - 1, coords[1])
+        !this.doesTetrominoOverlap(rotatedGrid, x, y - 1)
       ) {
         this.activeTetromino.tetromino.rotation += direction;
-        this.activeTetromino.coords[0] -= 1;
+        this.activeTetromino.y -= 1;
         return true;
       }
       if (
         // try moving it right
-        coords[1] < 5 &&
-        !this.doesTetrominoOverlap(rotatedGrid, coords[0], coords[1] + 1)
+        x < 5 &&
+        !this.doesTetrominoOverlap(rotatedGrid, x + 1, y)
       ) {
         this.activeTetromino.tetromino.rotation += direction;
-        this.activeTetromino.coords[1] += 1;
+        this.activeTetromino.x += 1;
         return true;
       }
       if (
         // try moving it left
-        !this.doesTetrominoOverlap(rotatedGrid, coords[0], coords[1] - 1)
+        !this.doesTetrominoOverlap(rotatedGrid, x - 1, y)
       ) {
         this.activeTetromino.tetromino.rotation += direction;
-        this.activeTetromino.coords[1] -= 1;
+        this.activeTetromino.x -= 1;
         return true;
       }
     }
@@ -107,47 +107,41 @@ export default class Board {
 
   setActiveTetromino() {
     const tetromino = new S();
-    const coords = [tetromino.startingRow, 4] as [number, number];
+    const x = 4;
+    const y = tetromino.startingRow;
 
     this.activeTetromino = {
-      coords,
       tetromino,
+      x,
+      y,
     };
 
-    return !this.doesTetrominoOverlap(
-      tetromino.getRotatedGrid(),
-      coords[0],
-      coords[1]
-    );
+    return !this.doesTetrominoOverlap(tetromino.getRotatedGrid(), x, y);
   }
 
   canMove(direction) {
-    const { coords, tetromino } = this.activeTetromino;
+    const { tetromino, x, y } = this.activeTetromino;
 
     return !this.doesTetrominoOverlap(
       tetromino.getRotatedGrid(),
-      coords[0],
-      coords[1] + direction
+      x + direction,
+      y
     );
   }
 
   canSoftDrop() {
-    const { coords, tetromino } = this.activeTetromino;
+    const { tetromino, x, y } = this.activeTetromino;
 
-    return !this.doesTetrominoOverlap(
-      tetromino.getRotatedGrid(),
-      coords[0] + 1,
-      coords[1]
-    );
+    return !this.doesTetrominoOverlap(tetromino.getRotatedGrid(), x, y + 1);
   }
 
   doesTetrominoOverlap(grid, x, y) {
     for (let i = 0; i < grid.length; i += 1) {
       for (let j = 0; j < grid[i].length; j += 1) {
         if (grid[i][j]) {
-          const row = this.grid[x + i];
+          const row = this.grid[y + i];
           if (row) {
-            const cell = row[y + j];
+            const cell = row[x + j];
             if (cell) {
               if (cell.contents) {
                 // cell is taken
