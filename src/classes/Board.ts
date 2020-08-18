@@ -3,6 +3,7 @@ import Tetromino from "./tetrominos/Tetromino";
 import S from "./tetrominos/S";
 import Square from "./Square";
 import IdleSquare from "./IdleSquare";
+import PlaceholderSquare from "./PlaceholderSquare";
 
 export default class Board {
   activeTetromino?: {
@@ -22,15 +23,25 @@ export default class Board {
     if (!this.activeTetromino) {
       return this.grid;
     }
+    const { tetromino, x, y } = this.activeTetromino;
     const gridWithActiveTetromino = [...this.grid].map((row) => [...row]);
-    this.activeTetromino.tetromino.getRotatedGrid().forEach((row, i) => {
+    const rotatedGrid = tetromino.getRotatedGrid();
+    let placeholderY = this.getHardDropY(rotatedGrid, x, y);
+    rotatedGrid.forEach((row, i) => {
       row.forEach((col, j) => {
         if (col) {
-          const gridRow = gridWithActiveTetromino[this.activeTetromino.y + i];
+          const placeholderRow = gridWithActiveTetromino[placeholderY + i];
+          if (placeholderRow) {
+            const placeholderCol = placeholderRow[x + j];
+            if (placeholderCol) {
+              placeholderRow[x + j] = new Cell(new PlaceholderSquare());
+            }
+          }
+          const gridRow = gridWithActiveTetromino[y + i];
           if (gridRow) {
-            const gridCol = gridRow[this.activeTetromino.x + j];
+            const gridCol = gridRow[x + j];
             if (gridCol) {
-              gridRow[this.activeTetromino.x + j] = new Cell(
+              gridRow[x + j] = new Cell(
                 deactivate ? new IdleSquare() : new Square()
               );
             }
@@ -39,6 +50,14 @@ export default class Board {
       });
     });
     return gridWithActiveTetromino;
+  }
+
+  getHardDropY(grid, x, y) {
+    let newY = y;
+    while (!this.doesTetrominoOverlap(grid, x, newY + 1)) {
+      newY += 1;
+    }
+    return newY;
   }
 
   deactivateTetromino() {
@@ -72,12 +91,8 @@ export default class Board {
 
       const rotatedGrid = tetromino.getRotatedGrid();
 
-      let newY = y;
-      while (!this.doesTetrominoOverlap(rotatedGrid, x, newY + 1)) {
-        newY += 1;
-      }
+      this.activeTetromino.y = this.getHardDropY(rotatedGrid, x, y);
 
-      this.activeTetromino.y = newY;
       this.deactivateTetromino();
       return true;
     }
