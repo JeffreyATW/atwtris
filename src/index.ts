@@ -57,7 +57,12 @@ const updateGame = () => {
       }
     }
   } else {
-    changed = board.setActiveTetromino();
+    if (board.setActiveTetromino()) {
+      changed = true;
+    } else {
+      alert("Game over!");
+      clearInterval(loop);
+    }
   }
 
   if (changed) {

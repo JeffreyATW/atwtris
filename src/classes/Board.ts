@@ -107,13 +107,18 @@ export default class Board {
 
   setActiveTetromino() {
     const tetromino = new S();
+    const coords = [tetromino.startingRow, 5] as [number, number];
 
     this.activeTetromino = {
-      coords: [tetromino.startingRow, 5],
+      coords,
       tetromino,
     };
 
-    return true;
+    return !this.doesTetrominoOverlap(
+      tetromino.getRotatedGrid(),
+      coords[0],
+      coords[1]
+    );
   }
 
   canMove(direction) {
