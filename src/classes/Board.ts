@@ -3,7 +3,7 @@ import Tetromino from "./tetrominos/Tetromino";
 import S from "./tetrominos/S";
 import Square from "./Square";
 import IdleSquare from "./IdleSquare";
-import PlaceholderSquare from "./PlaceholderSquare";
+import GhostSquare from "./GhostSquare";
 
 export default class Board {
   activeTetromino?: {
@@ -26,15 +26,15 @@ export default class Board {
     const { tetromino, x, y } = this.activeTetromino;
     const gridWithActiveTetromino = [...this.grid].map((row) => [...row]);
     const rotatedGrid = tetromino.getRotatedGrid();
-    let placeholderY = this.getHardDropY(rotatedGrid, x, y);
+    let ghostY = this.getHardDropY(rotatedGrid, x, y);
     rotatedGrid.forEach((row, i) => {
       row.forEach((col, j) => {
         if (col) {
-          const placeholderRow = gridWithActiveTetromino[placeholderY + i];
-          if (placeholderRow) {
-            const placeholderCol = placeholderRow[x + j];
-            if (placeholderCol) {
-              placeholderRow[x + j] = new Cell(new PlaceholderSquare());
+          const ghostRow = gridWithActiveTetromino[ghostY + i];
+          if (ghostRow) {
+            const ghostCol = ghostRow[x + j];
+            if (ghostCol) {
+              ghostRow[x + j] = new Cell(new GhostSquare());
             }
           }
           const gridRow = gridWithActiveTetromino[y + i];
