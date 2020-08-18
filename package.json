@@ -1,6 +1,6 @@
 {
   "name": "atwtris",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tetris clone",
   "main": "index.js",
   "pre-commit": "pre-commit",

@@ -28,7 +28,7 @@ const directionalKeys = [...moveKeys, KEY_CODES.DOWN];
 
 const rotateKeys = [KEY_CODES.Z, KEY_CODES.X];
 
-const actionKeys = [...directionalKeys, ...rotateKeys];
+const actionKeys = [...directionalKeys, ...rotateKeys, KEY_CODES.UP];
 
 const updateGame = () => {
   let changed = false;
@@ -40,18 +40,18 @@ const updateGame = () => {
       if (directionalKeys.includes(currentKeyCode)) {
         if ((gameStep - keyDownStep) % 6 === 0) {
           if (moveKeys.includes(currentKeyCode)) {
-            changed = board.moveActiveTetromino(
-              currentKeyCode === KEY_CODES.LEFT ? -1 : 1
-            );
+            changed = board.move(currentKeyCode === KEY_CODES.LEFT ? -1 : 1);
           } else if (currentKeyCode === KEY_CODES.DOWN) {
-            changed = board.softDropActiveTetromino();
+            changed = board.softDrop();
           }
         }
       } else if (rotateKeys.includes(currentKeyCode)) {
         if (keyDownStep === gameStep) {
-          changed = board.rotateActiveTetromino(
-            currentKeyCode === KEY_CODES.Z ? -1 : 1
-          );
+          changed = board.rotate(currentKeyCode === KEY_CODES.Z ? -1 : 1);
+        }
+      } else if (currentKeyCode === KEY_CODES.UP) {
+        if (keyDownStep === gameStep) {
+          changed = board.hardDrop();
         }
       }
     }

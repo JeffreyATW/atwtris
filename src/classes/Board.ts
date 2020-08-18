@@ -46,7 +46,7 @@ export default class Board {
     delete this.activeTetromino;
   }
 
-  moveActiveTetromino(direction) {
+  move(direction) {
     if (this.activeTetromino && this.canMove(direction)) {
       this.activeTetromino.x += direction;
       return true;
@@ -54,7 +54,7 @@ export default class Board {
     return false;
   }
 
-  softDropActiveTetromino() {
+  softDrop() {
     if (this.activeTetromino) {
       if (this.canSoftDrop()) {
         this.activeTetromino.y += 1;
@@ -66,7 +66,25 @@ export default class Board {
     return false;
   }
 
-  rotateActiveTetromino(direction) {
+  hardDrop() {
+    if (this.activeTetromino) {
+      const { tetromino, x, y } = this.activeTetromino;
+
+      const rotatedGrid = tetromino.getRotatedGrid();
+
+      let newY = y;
+      while (!this.doesTetrominoOverlap(rotatedGrid, x, newY + 1)) {
+        newY += 1;
+      }
+
+      this.activeTetromino.y = newY;
+      this.deactivateTetromino();
+      return true;
+    }
+    return false;
+  }
+
+  rotate(direction) {
     if (this.activeTetromino) {
       const { tetromino, x, y } = this.activeTetromino;
 
