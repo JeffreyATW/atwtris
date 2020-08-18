@@ -20,8 +20,7 @@ window.addEventListener("keyup", (event) => {
   }
 });
 
-const root = document.createElement("pre");
-document.body.append(root);
+const root = document.querySelector("pre");
 
 const moveKeys = [KEY_CODES.LEFT, KEY_CODES.RIGHT];
 
@@ -68,11 +67,27 @@ const updateGame = () => {
   if (changed) {
     let innerText = "";
 
-    board.getGrid().forEach((row) => {
+    const grid = board.getGrid();
+    grid.forEach((row, i) => {
+      if (i === 0) {
+        innerText += "_";
+        row.forEach(() => {
+          innerText += "_";
+        });
+        innerText += "_\n";
+      }
+      innerText += "|";
       row.forEach((cell) => {
         innerText += cell.text();
       });
-      innerText += "\n";
+      innerText += "|\n";
+      if (i === grid.length - 1) {
+        innerText += "‾";
+        row.forEach(() => {
+          innerText += "‾";
+        });
+        innerText += "‾";
+      }
     });
 
     root.innerText = innerText;
