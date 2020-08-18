@@ -107,7 +107,7 @@ export default class Board {
 
   setActiveTetromino() {
     const tetromino = new S();
-    const coords = [tetromino.startingRow, 5] as [number, number];
+    const coords = [tetromino.startingRow, 4] as [number, number];
 
     this.activeTetromino = {
       coords,
