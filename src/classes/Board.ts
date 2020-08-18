@@ -49,7 +49,9 @@ export default class Board {
   moveActiveTetromino(direction) {
     if (this.activeTetromino && this.canMove(direction)) {
       this.activeTetromino.coords[1] += direction;
+      return true;
     }
+    return false;
   }
 
   softDropActiveTetromino() {
@@ -59,7 +61,48 @@ export default class Board {
       } else {
         this.deactivateTetromino();
       }
+      return true;
     }
+    return false;
+  }
+
+  rotateActiveTetromino(direction) {
+    if (this.activeTetromino) {
+      const { coords, tetromino } = this.activeTetromino;
+
+      const rotatedGrid = tetromino.getRotatedGrid(direction);
+
+      if (!this.doesTetrominoOverlap(rotatedGrid, coords[0], coords[1])) {
+        this.activeTetromino.tetromino.rotation += direction;
+        return true;
+      }
+      if (
+        // try moving it up
+        !this.doesTetrominoOverlap(rotatedGrid, coords[0] - 1, coords[1])
+      ) {
+        this.activeTetromino.tetromino.rotation += direction;
+        this.activeTetromino.coords[0] -= 1;
+        return true;
+      }
+      if (
+        // try moving it right
+        coords[1] < 5 &&
+        !this.doesTetrominoOverlap(rotatedGrid, coords[0], coords[1] + 1)
+      ) {
+        this.activeTetromino.tetromino.rotation += direction;
+        this.activeTetromino.coords[1] += 1;
+        return true;
+      }
+      if (
+        // try moving it left
+        !this.doesTetrominoOverlap(rotatedGrid, coords[0], coords[1] - 1)
+      ) {
+        this.activeTetromino.tetromino.rotation += direction;
+        this.activeTetromino.coords[1] -= 1;
+        return true;
+      }
+    }
+    return false;
   }
 
   setActiveTetromino() {
@@ -69,13 +112,15 @@ export default class Board {
       coords: [tetromino.startingRow, 5],
       tetromino,
     };
+
+    return true;
   }
 
   canMove(direction) {
     const { coords, tetromino } = this.activeTetromino;
 
     return !this.doesTetrominoOverlap(
-      tetromino.grid,
+      tetromino.getRotatedGrid(),
       coords[0],
       coords[1] + direction
     );
@@ -84,24 +129,9 @@ export default class Board {
   canSoftDrop() {
     const { coords, tetromino } = this.activeTetromino;
 
-    return !this.doesTetrominoOverlap(tetromino.grid, coords[0] + 1, coords[1]);
-  }
-
-  canRotateClockwise() {
-    const { coords, tetromino } = this.activeTetromino;
-
     return !this.doesTetrominoOverlap(
-      tetromino.getRotatedGrid(1),
-      coords[0],
-      coords[1]
-    );
-  }
-  canRotateCounter() {
-    const { coords, tetromino } = this.activeTetromino;
-
-    return !this.doesTetrominoOverlap(
-      tetromino.getRotatedGrid(-1),
-      coords[0],
+      tetromino.getRotatedGrid(),
+      coords[0] + 1,
       coords[1]
     );
   }

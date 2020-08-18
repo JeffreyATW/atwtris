@@ -1,6 +1,6 @@
 export default class Tetromino {
-  grid: number[][];
-  rotation: 0 | 1 | 2 | 3;
+  protected grid: number[][];
+  rotation: number;
   startingRow: number;
 
   constructor() {

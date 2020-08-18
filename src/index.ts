@@ -4,59 +4,74 @@ import KEY_CODES from "./constants/keyCodes";
 const board = new Board();
 
 let currentKeyCode = null;
-let immediateMoveTime = 0;
+let keyDownStep = 0;
 
 let gameStep = 0;
 
 window.addEventListener("keydown", (event) => {
+  keyDownStep = 0;
   currentKeyCode = event.keyCode;
 });
 
 window.addEventListener("keyup", (event) => {
   if (currentKeyCode === event.keyCode) {
+    keyDownStep = 0;
     currentKeyCode = null;
-    immediateMoveTime = 0;
   }
 });
 
 const root = document.createElement("pre");
 document.body.append(root);
 
+const moveKeys = [KEY_CODES.LEFT, KEY_CODES.RIGHT];
+
+const directionalKeys = [...moveKeys, KEY_CODES.DOWN];
+
+const rotateKeys = [KEY_CODES.Z, KEY_CODES.X];
+
+const actionKeys = [...directionalKeys, ...rotateKeys];
+
 const updateGame = () => {
+  let changed = false;
   if (board.activeTetromino) {
-    if (
-      currentKeyCode === KEY_CODES.LEFT ||
-      currentKeyCode === KEY_CODES.RIGHT ||
-      currentKeyCode === KEY_CODES.DOWN
-    ) {
-      if (immediateMoveTime === 0) {
-        immediateMoveTime = gameStep;
+    if (actionKeys.includes(currentKeyCode)) {
+      if (keyDownStep === 0) {
+        keyDownStep = gameStep;
       }
-      if ((gameStep - immediateMoveTime) % 6 === 0) {
-        if (
-          currentKeyCode === KEY_CODES.LEFT ||
-          currentKeyCode === KEY_CODES.RIGHT
-        ) {
-          board.moveActiveTetromino(currentKeyCode === KEY_CODES.LEFT ? -1 : 1);
-        } else if (currentKeyCode === KEY_CODES.DOWN) {
-          board.softDropActiveTetromino();
+      if (directionalKeys.includes(currentKeyCode)) {
+        if ((gameStep - keyDownStep) % 6 === 0) {
+          if (moveKeys.includes(currentKeyCode)) {
+            changed = board.moveActiveTetromino(
+              currentKeyCode === KEY_CODES.LEFT ? -1 : 1
+            );
+          } else if (currentKeyCode === KEY_CODES.DOWN) {
+            changed = board.softDropActiveTetromino();
+          }
+        }
+      } else if (rotateKeys.includes(currentKeyCode)) {
+        if (keyDownStep === gameStep) {
+          changed = board.rotateActiveTetromino(
+            currentKeyCode === KEY_CODES.Z ? -1 : 1
+          );
         }
       }
     }
   } else {
-    board.setActiveTetromino();
+    changed = board.setActiveTetromino();
   }
 
-  let innerText = "";
+  if (changed) {
+    let innerText = "";
 
-  board.getGrid().forEach((row) => {
-    row.forEach((cell) => {
-      innerText += cell.text();
+    board.getGrid().forEach((row) => {
+      row.forEach((cell) => {
+        innerText += cell.text();
+      });
+      innerText += "\n";
     });
-    innerText += "\n";
-  });
 
-  root.innerText = innerText;
+    root.innerText = innerText;
+  }
   gameStep += 1;
 };
 
