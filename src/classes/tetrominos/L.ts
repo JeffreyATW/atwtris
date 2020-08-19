@@ -8,5 +8,5 @@ export default class L extends Tetromino4Rotations {
     [1, 0, 0],
   ];
 
-  startingRow = 1;
+  startingRow = -1;
 }

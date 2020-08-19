@@ -1,7 +1,9 @@
 import Board from "./classes/Board";
+import Queue from "./classes/Queue";
 import KEY_CODES from "./constants/keyCodes";
 
 const board = new Board();
+const queue = new Queue();
 
 let currentKeyCode = null;
 let keyDownStep = 0;
@@ -56,7 +58,7 @@ const updateGame = () => {
       }
     }
   } else {
-    if (board.setActiveTetromino()) {
+    if (board.setActiveTetromino(queue.pop())) {
       changed = true;
     } else {
       alert("Game over!");

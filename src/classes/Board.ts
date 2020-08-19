@@ -117,13 +117,14 @@ export default class Board {
         this.activeTetromino.y -= 1;
         return true;
       }
+      const nonNegativeX = Math.max(x, 0);
       if (
         // try moving it right
         x < 5 &&
-        !this.doesTetrominoOverlap(rotatedGrid, x + 1, y)
+        !this.doesTetrominoOverlap(rotatedGrid, nonNegativeX, y)
       ) {
         this.activeTetromino.tetromino.rotation += direction;
-        this.activeTetromino.x += 1;
+        this.activeTetromino.x = nonNegativeX;
         return true;
       }
       if (
@@ -138,8 +139,7 @@ export default class Board {
     return false;
   }
 
-  setActiveTetromino() {
-    const tetromino = new S();
+  setActiveTetromino(tetromino) {
     const x = 4;
     const y = tetromino.startingRow;
 
@@ -172,7 +172,9 @@ export default class Board {
     for (let i = 0; i < grid.length; i += 1) {
       for (let j = 0; j < grid[i].length; j += 1) {
         if (grid[i][j]) {
-          const row = this.grid[y + i];
+          // allow tetromino to be above playfield
+          const testY = Math.max(y + i, 0);
+          const row = this.grid[testY];
           if (row) {
             const cell = row[x + j];
             if (cell) {

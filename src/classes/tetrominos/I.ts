@@ -9,5 +9,5 @@ export default class I extends Tetromino2Rotations {
     [0, 0, 0, 0],
   ];
 
-  startingRow = 1;
+  startingRow = -1;
 }
