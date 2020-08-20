@@ -1,13 +1,12 @@
+import * as rotateMatrix from "rotate-matrix";
+
 export default class Tetromino {
   protected grid: number[][];
-  rotation: number;
-  startingRow: number;
-
-  constructor() {
-    this.rotation = 0;
-  }
+  rotation = 0;
+  readonly startingCol: number;
+  readonly startingRow: number;
 
   getRotatedGrid(direction = 0) {
-    return this.grid;
+    return rotateMatrix(this.grid, this.rotation + direction);
   }
 }

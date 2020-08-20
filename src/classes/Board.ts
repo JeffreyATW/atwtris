@@ -1,6 +1,5 @@
 import Cell from "./Cell";
 import Tetromino from "./tetrominos/Tetromino";
-import S from "./tetrominos/S";
 import Square from "./Square";
 import IdleSquare from "./IdleSquare";
 import GhostSquare from "./GhostSquare";
@@ -140,7 +139,7 @@ export default class Board {
   }
 
   setActiveTetromino(tetromino) {
-    const x = 4;
+    const x = tetromino.startingCol;
     const y = tetromino.startingRow;
 
     this.activeTetromino = {

@@ -7,7 +7,7 @@ import S from "./tetrominos/S";
 import Z from "./tetrominos/Z";
 
 export default class Queue {
-  queue: Tetromino[];
+  private queue: Tetromino[];
 
   constructor() {
     this.queue = [];

@@ -1,7 +1,6 @@
 import Tetromino from "./Tetromino";
-import Tetromino2Rotations from "./Tetromino2Rotations";
 
-export default class I extends Tetromino2Rotations {
+export default class I extends Tetromino {
   grid = [
     [0, 0, 0, 0],
     [1, 1, 1, 1],
@@ -9,5 +8,6 @@ export default class I extends Tetromino2Rotations {
     [0, 0, 0, 0],
   ];
 
+  startingCol = 3;
   startingRow = -1;
 }

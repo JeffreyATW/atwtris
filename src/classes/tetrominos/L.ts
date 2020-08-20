@@ -1,12 +1,12 @@
 import Tetromino from "./Tetromino";
-import Tetromino4Rotations from "./Tetromino4Rotations";
 
-export default class L extends Tetromino4Rotations {
+export default class L extends Tetromino {
   grid = [
     [0, 0, 0],
     [1, 1, 1],
     [1, 0, 0],
   ];
 
+  startingCol = 3;
   startingRow = -1;
 }

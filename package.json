@@ -1,6 +1,6 @@
 {
   "name": "atwtris",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Tetris clone",
   "main": "index.js",
   "pre-commit": "pre-commit",
@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production webpack",
     "pre-commit": "npm run build && git add .",
     "start": "webpack-dev-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Jeffrey Carl Faden",
   "license": "MIT",
