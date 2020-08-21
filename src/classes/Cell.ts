@@ -1,7 +1,7 @@
 import Square from "./Square";
 
 export default class Cell {
-  contents?: Square;
+  readonly contents?: Square;
 
   constructor(contents?) {
     this.contents = contents;

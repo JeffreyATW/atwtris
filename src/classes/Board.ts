@@ -11,11 +11,17 @@ export default class Board {
     y: number;
   };
   private grid: Cell[][];
+  static height = 20;
+  static width = 10;
 
   constructor() {
-    this.grid = Array.apply(null, new Array(20)).map(() =>
-      Array.apply(null, new Array(10)).map(() => new Cell())
+    this.grid = Array.apply(null, new Array(Board.height)).map(
+      this.generateRow
     );
+  }
+
+  generateRow() {
+    return Array.apply(null, new Array(Board.width)).map(() => new Cell());
   }
 
   getGrid(deactivate = false) {
@@ -60,7 +66,17 @@ export default class Board {
   }
 
   deactivateTetromino() {
-    this.grid = this.getGrid(true);
+    const newGrid = this.getGrid(true).reduce((acc, curr, i) => {
+      if (!curr.every((cell) => cell.contents instanceof IdleSquare)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, [] as Cell[][]);
+    const clearedRows = newGrid.length;
+    for (let i = 0; i < Board.height - clearedRows; i += 1) {
+      newGrid.unshift(this.generateRow());
+    }
+    this.grid = newGrid;
     delete this.activeTetromino;
   }
 
@@ -119,7 +135,7 @@ export default class Board {
       const nonNegativeX = Math.max(x, 0);
       if (
         // try moving it right
-        x < 5 &&
+        x < Board.width / 2 &&
         !this.doesTetrominoOverlap(rotatedGrid, nonNegativeX, y)
       ) {
         this.activeTetromino.tetromino.rotation += direction;

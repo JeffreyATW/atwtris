@@ -136,6 +136,28 @@ describe("Board", () => {
           }
         });
     });
+
+    test("clears rows if any are full of IdleSquares", () => {
+      const fullRow = Array.apply(null, new Array(Board.width)).map(
+        () => new Cell(new IdleSquare())
+      );
+      board.grid[17][0] = new Cell(new IdleSquare());
+      board.grid[18] = fullRow;
+      board.grid[19] = fullRow;
+
+      board.deactivateTetromino();
+
+      board
+        .getGrid()
+        .flat()
+        .forEach((cell, i) => {
+          if (i === 190) {
+            expect(cell.text()).toBe("X");
+          } else {
+            expect(cell.text()).toBe(" ");
+          }
+        });
+    });
   });
 
   describe("move", () => {

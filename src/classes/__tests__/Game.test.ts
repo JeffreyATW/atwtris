@@ -106,7 +106,7 @@ describe("Game", () => {
           expect(game.root.innerText).toBeUndefined();
         });
 
-        describe("when keydown step is a multiple of 6", () => {
+        describe("when keydown step minus game step is a multiple of 6", () => {
           beforeEach(() => {
             game.keyDownStep = 6;
           });
