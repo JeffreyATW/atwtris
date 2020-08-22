@@ -1,6 +1,7 @@
 import KEY_CODES from "../../constants/keyCodes";
 import S from "../tetrominos/S";
 import Game from "../Game";
+import O from "../tetrominos/O";
 
 describe("Game", () => {
   let game;
@@ -53,7 +54,8 @@ describe("Game", () => {
 
     describe("update", () => {
       beforeEach(() => {
-        game.root = {};
+        game.elements.board = {};
+        game.elements.queue = {};
         game.loop = 1;
       });
 
@@ -63,7 +65,7 @@ describe("Game", () => {
 
           game.update();
 
-          expect(game.root.innerText).not.toBeUndefined();
+          expect(game.elements.board.innerText).not.toBeUndefined();
         });
 
         test("clears update interval", () => {
@@ -83,7 +85,7 @@ describe("Game", () => {
         test("does nothing if no keys are held", () => {
           game.update();
 
-          expect(game.root.innerText).toBeUndefined();
+          expect(game.elements.board.innerText).toBeUndefined();
         });
 
         test("sets keyDownStep if null and a key is held", () => {
@@ -103,7 +105,7 @@ describe("Game", () => {
 
           game.update();
 
-          expect(game.root.innerText).toBeUndefined();
+          expect(game.elements.board.innerText).toBeUndefined();
         });
 
         describe("when keydown step minus game step is a multiple of 6", () => {
@@ -183,7 +185,19 @@ describe("Game", () => {
 
           expect(hardDropSpy).not.toHaveBeenCalled();
 
-          expect(game.root.innerText).toBeUndefined();
+          expect(game.elements.board.innerText).toBeUndefined();
+        });
+      });
+
+      describe("with queue of O blocks", () => {
+        beforeEach(() => {
+          game.queue.tetrominos = [new O(), new O(), new O(), new O()];
+        });
+
+        test("renders queue", () => {
+          game.update();
+
+          expect(game.elements.queue.innerText).not.toBeUndefined();
         });
       });
     });

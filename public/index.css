@@ -1,0 +1,10 @@
+#game {
+  display: grid;
+  gap: 2em;
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+#game pre {
+  margin: 0;
+}

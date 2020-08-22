@@ -1,7 +1,7 @@
 import * as rotateMatrix from "rotate-matrix";
 
 export default class Tetromino {
-  protected grid: number[][];
+  readonly grid: number[][];
   rotation = 0;
   readonly startingCol: number;
   readonly startingRow: number;

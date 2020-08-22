@@ -7,12 +7,12 @@ import S from "./tetrominos/S";
 import Z from "./tetrominos/Z";
 
 export default class Queue {
-  private queue: Tetromino[];
+  readonly tetrominos: Tetromino[];
 
   constructor() {
-    this.queue = [];
+    this.tetrominos = [];
     for (let i = 0; i < 4; i += 1) {
-      this.queue.push(new (Queue.getRandom())());
+      this.tetrominos.push(new (Queue.getRandom())());
     }
   }
 
@@ -24,7 +24,7 @@ export default class Queue {
   }
 
   pop() {
-    this.queue.push(new (Queue.getRandom())());
-    return this.queue.shift();
+    this.tetrominos.push(new (Queue.getRandom())());
+    return this.tetrominos.shift();
   }
 }

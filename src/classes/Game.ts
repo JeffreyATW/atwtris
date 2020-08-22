@@ -1,12 +1,17 @@
 import Board from "../classes/Board";
 import Queue from "../classes/Queue";
 import KEY_CODES from "../constants/keyCodes";
+import Cell from "./Cell";
+import IdleSquare from "./IdleSquare";
+import Square from "./Square";
 
 export default class Game {
   currentKeyCode: number;
   keyDownStep: number;
   step: number;
-  root: HTMLElement;
+  elements: {
+    [index: string]: HTMLElement;
+  };
   board: Board;
   queue: Queue;
   loop: NodeJS.Timeout;
@@ -24,7 +29,8 @@ export default class Game {
   ];
 
   update = () => {
-    let changed = false;
+    let boardChanged = false;
+    let queueChanged = false;
     if (this.board.activeTetromino) {
       if (Game.actionKeys.includes(this.currentKeyCode)) {
         if (this.keyDownStep === null) {
@@ -33,60 +39,99 @@ export default class Game {
         if (Game.directionalKeys.includes(this.currentKeyCode)) {
           if ((this.step - this.keyDownStep) % 6 === 0) {
             if (Game.moveKeys.includes(this.currentKeyCode)) {
-              changed = this.board.move(
+              boardChanged = this.board.move(
                 this.currentKeyCode === KEY_CODES.LEFT ? -1 : 1
               );
             } else {
-              changed = this.board.softDrop();
+              boardChanged = this.board.softDrop();
             }
           }
         } else if (this.keyDownStep === this.step) {
           if (Game.rotateKeys.includes(this.currentKeyCode)) {
-            changed = this.board.rotate(
+            boardChanged = this.board.rotate(
               this.currentKeyCode === KEY_CODES.Z ? -1 : 1
             );
           } else {
-            changed = this.board.hardDrop();
+            boardChanged = this.board.hardDrop();
           }
         }
       }
     } else {
       if (this.board.setActiveTetromino(this.queue.pop())) {
-        changed = true;
+        boardChanged = true;
+        queueChanged = true;
       } else {
         alert("Game over!");
         clearInterval(this.loop);
       }
     }
 
-    if (changed) {
-      let innerText = "";
+    if (boardChanged) {
+      let boardText = "";
 
       const grid = this.board.getGrid();
       grid.forEach((row, i) => {
         if (i === 0) {
-          innerText += "_";
+          boardText += "_";
           row.forEach(() => {
-            innerText += "_";
+            boardText += "_";
           });
-          innerText += "_\n";
+          boardText += "_\n";
         }
-        innerText += "|";
+        boardText += "|";
         row.forEach((cell) => {
-          innerText += cell.text();
+          boardText += cell.text();
         });
-        innerText += "|\n";
+        boardText += "|\n";
         if (i === grid.length - 1) {
-          innerText += "‾";
+          boardText += "‾";
           row.forEach(() => {
-            innerText += "‾";
+            boardText += "‾";
           });
-          innerText += "‾";
+          boardText += "‾";
         }
       });
 
-      this.root.innerText = innerText;
+      this.elements.board.innerText = boardText;
     }
+
+    if (queueChanged) {
+      let queueText = "_NEXT_\n";
+
+      this.queue.tetrominos.forEach((tetromino, i) => {
+        let padRow = tetromino.grid.length < 4 && tetromino.startingRow > -1;
+        for (let j = 0; j <= 4; j += 1) {
+          let lastRow = i === 3 && j === 4;
+          if (!lastRow) {
+            queueText += "|";
+          }
+          const actualJ = padRow ? j - 1 : j;
+          for (let k = 0; k < 4; k += 1) {
+            const actualK = tetromino.grid[0].length < 3 ? k - 1 : k;
+            if (j === 0 && padRow) {
+              queueText += " ";
+            } else if (tetromino.grid[actualJ]) {
+              const cell = new Cell(
+                tetromino.grid[actualJ][actualK] ? new Square() : undefined
+              );
+              queueText += cell.text();
+            } else if (!lastRow) {
+              queueText += j === 4 ? "-" : " ";
+            }
+          }
+          if (!lastRow) {
+            queueText += "|\n";
+          }
+        }
+      });
+
+      for (let i = 0; i < 6; i += 1) {
+        queueText += "‾";
+      }
+
+      this.elements.queue.innerText = queueText;
+    }
+
     this.step += 1;
   };
 
@@ -110,7 +155,9 @@ export default class Game {
       }
     });
 
-    this.root = document.querySelector("pre");
+    this.elements = {};
+    this.elements.board = document.getElementById("board");
+    this.elements.queue = document.getElementById("queue");
 
     this.loop = setInterval(this.update, 1000 / 60);
   };
