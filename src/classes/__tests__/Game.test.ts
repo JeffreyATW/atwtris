@@ -1,7 +1,10 @@
 import KEY_CODES from "../../constants/keyCodes";
 import S from "../tetrominos/S";
 import Game from "../Game";
+import I from "../tetrominos/I";
+import J from "../tetrominos/J";
 import O from "../tetrominos/O";
+import T from "../tetrominos/T";
 
 describe("Game", () => {
   let game;
@@ -189,9 +192,9 @@ describe("Game", () => {
         });
       });
 
-      describe("with queue of O blocks", () => {
+      describe("with queue of different kinds of blocks", () => {
         beforeEach(() => {
-          game.queue.tetrominos = [new O(), new O(), new O(), new O()];
+          game.queue.tetrominos = [new I(), new J(), new O(), new T()];
         });
 
         test("renders queue", () => {

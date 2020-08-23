@@ -2,7 +2,6 @@ import Board from "../classes/Board";
 import Queue from "../classes/Queue";
 import KEY_CODES from "../constants/keyCodes";
 import Cell from "./Cell";
-import IdleSquare from "./IdleSquare";
 import Square from "./Square";
 
 export default class Game {

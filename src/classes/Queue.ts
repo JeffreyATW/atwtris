@@ -4,6 +4,7 @@ import J from "./tetrominos/J";
 import L from "./tetrominos/L";
 import O from "./tetrominos/O";
 import S from "./tetrominos/S";
+import T from "./tetrominos/T";
 import Z from "./tetrominos/Z";
 
 export default class Queue {
@@ -16,7 +17,7 @@ export default class Queue {
     }
   }
 
-  static blocks = [I, J, L, O, S, Z];
+  static blocks = [I, J, L, O, S, T, Z];
 
   static getRandom() {
     const idx = Math.floor(Queue.blocks.length * Math.random());
