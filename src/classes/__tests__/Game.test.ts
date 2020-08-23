@@ -58,6 +58,7 @@ describe("Game", () => {
     describe("update", () => {
       beforeEach(() => {
         game.elements.board = {};
+        game.elements.level = {};
         game.elements.queue = {};
         game.loop = 1;
       });
@@ -69,14 +70,6 @@ describe("Game", () => {
           game.update();
 
           expect(game.elements.board.innerText).not.toBeUndefined();
-        });
-
-        test("clears update interval", () => {
-          game.board.setActiveTetromino = jest.fn(() => false);
-
-          game.update();
-
-          expect(window.clearInterval).toHaveBeenCalledWith(game.loop);
         });
       });
 
@@ -190,6 +183,30 @@ describe("Game", () => {
 
           expect(game.elements.board.innerText).toBeUndefined();
         });
+
+        describe("when tetromino was deactivated", () => {
+          beforeEach(() => {
+            game.currentKeyCode = KEY_CODES.UP;
+
+            game.board.hardDrop = jest.fn(() => true);
+          });
+
+          test("sets active tetromino", () => {
+            game.board.setActiveTetromino = jest.fn(() => true);
+
+            game.update();
+
+            expect(window.clearInterval).not.toHaveBeenCalled();
+          });
+
+          test("clears update interval if can't activate new one", () => {
+            game.board.setActiveTetromino = jest.fn(() => false);
+
+            game.update();
+
+            expect(window.clearInterval).toHaveBeenCalledWith(game.loop);
+          });
+        });
       });
 
       describe("with queue of different kinds of blocks", () => {
@@ -202,6 +219,22 @@ describe("Game", () => {
 
           expect(game.elements.queue.innerText).not.toBeUndefined();
         });
+      });
+
+      test("renders level with three digits", () => {
+        game.board.clearCount = 990;
+
+        game.update();
+
+        expect(game.elements.level.innerText).toContain("|100");
+      });
+
+      test("renders level above 999", () => {
+        game.board.clearCount = 10000;
+
+        game.update();
+
+        expect(game.elements.level.innerText).toContain("+");
       });
     });
   });

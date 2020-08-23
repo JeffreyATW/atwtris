@@ -30,7 +30,10 @@ export default class Game {
   update = () => {
     let boardChanged = false;
     let queueChanged = false;
+    let levelChanged = false;
+    let prevClearCount = this.board.clearCount;
     if (this.board.activeTetromino) {
+      let deactivated = false;
       if (Game.actionKeys.includes(this.currentKeyCode)) {
         if (this.keyDownStep === null) {
           this.keyDownStep = this.step;
@@ -42,7 +45,7 @@ export default class Game {
                 this.currentKeyCode === KEY_CODES.LEFT ? -1 : 1
               );
             } else {
-              boardChanged = this.board.softDrop();
+              deactivated = boardChanged = this.board.softDrop();
             }
           }
         } else if (this.keyDownStep === this.step) {
@@ -51,18 +54,26 @@ export default class Game {
               this.currentKeyCode === KEY_CODES.Z ? -1 : 1
             );
           } else {
-            boardChanged = this.board.hardDrop();
+            deactivated = boardChanged = this.board.hardDrop();
           }
         }
       }
-    } else {
-      if (this.board.setActiveTetromino(this.queue.pop())) {
-        boardChanged = true;
-        queueChanged = true;
-      } else {
-        alert("Game over!");
-        clearInterval(this.loop);
+      if (deactivated) {
+        if (this.board.setActiveTetromino(this.queue.pop())) {
+          queueChanged = true;
+          levelChanged =
+            Math.floor(prevClearCount / 10) !==
+            Math.floor(this.board.clearCount / 10);
+        } else {
+          alert("Game over!");
+          clearInterval(this.loop);
+        }
       }
+    } else {
+      this.board.setActiveTetromino(this.queue.pop());
+      boardChanged = true;
+      queueChanged = true;
+      levelChanged = true;
     }
 
     if (boardChanged) {
@@ -98,24 +109,23 @@ export default class Game {
       let queueText = "_NEXT_\n";
 
       this.queue.tetrominos.forEach((tetromino, i) => {
-        let padRow = tetromino.grid.length < 4 && tetromino.startingRow > -1;
-        for (let j = 0; j <= 4; j += 1) {
-          let lastRow = i === 3 && j === 4;
+        for (let j = 0; j <= 2; j += 1) {
+          let lastRow = i === 3 && j === 2;
           if (!lastRow) {
             queueText += "|";
           }
-          const actualJ = padRow ? j - 1 : j;
+          const actualJ = j - tetromino.startingRow;
           for (let k = 0; k < 4; k += 1) {
             const actualK = tetromino.grid[0].length < 3 ? k - 1 : k;
-            if (j === 0 && padRow) {
-              queueText += " ";
-            } else if (tetromino.grid[actualJ]) {
+            if (j === 2) {
+              if (!lastRow) {
+                queueText += "-";
+              }
+            } else {
               const cell = new Cell(
                 tetromino.grid[actualJ][actualK] ? new Square() : undefined
               );
               queueText += cell.text();
-            } else if (!lastRow) {
-              queueText += j === 4 ? "-" : " ";
             }
           }
           if (!lastRow) {
@@ -129,6 +139,28 @@ export default class Game {
       }
 
       this.elements.queue.innerText = queueText;
+    }
+
+    if (levelChanged) {
+      let levelText = "LEVEL_\n|";
+
+      const level = Math.floor(this.board.clearCount / 10) + 1;
+
+      if (level < 100) {
+        levelText += " ";
+      }
+
+      levelText += Math.min(level, 999);
+
+      if (level < 10) {
+        levelText += " ";
+      }
+
+      levelText += level > 1000 ? "+" : " ";
+
+      levelText += "|\n‾‾‾‾‾‾";
+
+      this.elements.level.innerText = levelText;
     }
 
     this.step += 1;
@@ -157,6 +189,7 @@ export default class Game {
     this.elements = {};
     this.elements.board = document.getElementById("board");
     this.elements.queue = document.getElementById("queue");
+    this.elements.level = document.getElementById("level");
 
     this.loop = setInterval(this.update, 1000 / 60);
   };

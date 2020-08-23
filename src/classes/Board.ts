@@ -11,6 +11,7 @@ export default class Board {
     y: number;
   };
   private grid: Cell[][];
+  clearCount = 0;
   static height = 20;
   static width = 10;
 
@@ -72,10 +73,11 @@ export default class Board {
       }
       return acc;
     }, [] as Cell[][]);
-    const clearedRows = newGrid.length;
-    for (let i = 0; i < Board.height - clearedRows; i += 1) {
+    const clearedRows = Board.height - newGrid.length;
+    for (let i = 0; i < clearedRows; i += 1) {
       newGrid.unshift(this.generateRow());
     }
+    this.clearCount += clearedRows;
     this.grid = newGrid;
     delete this.activeTetromino;
   }
