@@ -45,7 +45,8 @@ export default class Game {
                 this.currentKeyCode === KEY_CODES.LEFT ? -1 : 1
               );
             } else {
-              deactivated = boardChanged = this.board.softDrop();
+              boardChanged = this.board.softDrop();
+              deactivated = !this.board.activeTetromino;
             }
           }
         } else if (this.keyDownStep === this.step) {
